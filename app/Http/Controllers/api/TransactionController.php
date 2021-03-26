@@ -66,6 +66,18 @@ class TransactionController extends Controller
             );
         }
     }
- 
+     public function exportReport( Request $request){
+            $condiction=[];
+    }
+    public function findSearch(Request $request ){
+         $parametros=[];
+         if($request->parking_lot_id !=null || $request->parking_lot_id !=''){
+          $parametros[]=['parking_lot_id','=',$request->parking_lot_id];
+         }
+         if($request->parking_lot_id !=null || $request->parking_lot_id !=''){
+            $parametros[]=['parking_lot_id','=',$request->parking_lot_id];
+           }
+    }
+          
 }
 

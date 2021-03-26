@@ -15,7 +15,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        $clients=Client::with('vehicles')->orderBy('created_at','ASC')->get();
+        $clients=Client::with('vehicles.parkingLot')->orderBy('created_at','ASC')->get();
         return response()->json(
             [ 'status'=>'ok',
               'message'=>'', 

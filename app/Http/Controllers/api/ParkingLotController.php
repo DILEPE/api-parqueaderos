@@ -148,10 +148,11 @@ class ParkingLotController extends Controller
             //throw $th;
         }
     }
-    public function changeStatus($id){
+    public function changeStatus(Request $request,$id){
         $ParkingLot=ParkingLot::find($id);
+        $request->merge(['status'=>'ocupado']);
          try {
-             $ParkingLot->update(['status'=>'ocupado']);
+             $ParkingLot->update($request->all());
              return response()->json(
                 [ 'status'=>'ok',
                   'message'=>'vehiculo estacionado', 
@@ -171,7 +172,11 @@ class ParkingLotController extends Controller
     public function changeFree($id){
         $ParkingLot=ParkingLot::find($id);
          try {
-             $ParkingLot->update(['status'=>'libre']);
+             $data=[
+                'status'=>'libre',
+                'vehicle_id'=>null
+             ];
+             $ParkingLot->update($data);
              return response()->json(
                 [ 'status'=>'ok',
                   'message'=>'tiempo en la ubicacion cerrado', 

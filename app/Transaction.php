@@ -13,7 +13,9 @@ class Transaction extends Model
     "tariff_id",
     "time_stop",
     "client_id",
-    "bill_id"
+    "bill_id",
+    "date_start",
+    "date_stop"
     ];
     public function parkingLot(){
         return $this->belongsTo(ParkingLot::class);
