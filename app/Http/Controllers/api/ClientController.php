@@ -52,6 +52,20 @@ class ClientController extends Controller
            );
         } 
     }
+    public function options(){
+        $options=Client::select('id','name')->get();
+        $optionsData=[];
+        foreach($options as $option){
+         $optionsData[]=['text'=>$option->name,'value'=>$option->id];  
+        }
+        return response()->json(
+            [
+               'status'=>'ok',
+               'message'=>'', 
+               'data'=>$optionsData   
+            ]
+        );
+    }
 
     /**
      * Display the specified resource.

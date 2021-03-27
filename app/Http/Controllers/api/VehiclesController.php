@@ -22,6 +22,20 @@ class VehiclesController extends Controller
             ]
         );
     }
+    public function options($type){
+        $options=Vehicle::select('id','plate')->where('type_vehicle',$type)->get();
+        $optionsData=[];
+        foreach($options as $option){
+         $optionsData[]=['text'=>$option->plate,'value'=>$option->id];  
+        }
+        return response()->json(
+            [
+               'status'=>'ok',
+               'message'=>'', 
+               'data'=>$optionsData   
+            ]
+        );
+    }
 
     /**
      * Store a newly created resource in storage.

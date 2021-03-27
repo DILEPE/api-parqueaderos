@@ -71,12 +71,37 @@ class TransactionController extends Controller
     }
     public function findSearch(Request $request ){
          $parametros=[];
-         if($request->parking_lot_id !=null || $request->parking_lot_id !=''){
+         $search=[];
+        if($request->parking_lot_id !=null || $request->parking_lot_id !=''){
           $parametros[]=['parking_lot_id','=',$request->parking_lot_id];
          }
-         if($request->parking_lot_id !=null || $request->parking_lot_id !=''){
-            $parametros[]=['parking_lot_id','=',$request->parking_lot_id];
+        if($request->vehicle_id !=null || $request->vehicle_id !=''){
+            $parametros[]=['vehicle_id','=',$request->vehicle_id];
            }
+        if($request->client_id !=null || $request->client_id !=''){
+             $parametros[]=['client_id','=',$request->client_id];
+        }
+        if($request->date_start!=null || $request->date_start !=''){
+            $parametros[]=['date_start','>=',$request->date_start];
+           }
+        if($request->date_stop !=null || $request->date_stop !=''){
+            $parametros[]=['date_stop','=<',$request->date_stop];
+        }
+        $search=Transaction::with('parkingLot','client','tariff','vehicle','bill')->where($parametros)->get();
+        if(count($search)==0){
+            return response()->json([
+                'status'=>'ok',
+                'message'=>'No se encontraron resultados',
+                'data'=>$search
+            ]);
+        }
+        else{
+            return response()->json([
+                'status'=>'ok',
+                'message'=>'se encontraron'.count($search). ' resultados',
+                'data'=>$search
+            ]); 
+        }
     }
           
 }

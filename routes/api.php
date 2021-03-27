@@ -36,7 +36,8 @@ Route::group([
         Route::post('store', 'api\ClientController@store');
         Route::put('update/{id}','api\ClientController@update');
         Route::delete('destroy/{id}','api\ClientController@destroy');  
-        Route::get('list','api\ClientController@index');  
+        Route::get('list','api\ClientController@index'); 
+        Route::get('options','api\ClientController@options');
    
 });
 Route::group([
@@ -50,6 +51,8 @@ Route::group([
     Route::get('options/{type}','api\ParkingLotController@options');
     Route::put('status/{id}','api\ParkingLotController@changeStatus');
     Route::put('status-free/{id}','api\ParkingLotController@changeFree');
+    Route::get('options-search/{type}','api\ParkingLotController@optionsSearch');
+    
 
 });
 
@@ -70,8 +73,9 @@ Route::group([
 ], function () {
     Route::post('store','api\VehiclesController@store');
     Route::put('update/{id}','api\VehiclesController@update');
-    Route::delete('destroy/{id}','api\vehiclesController@destroy');
+    Route::delete('destroy/{id}','api\VehiclesController@destroy');
     Route::get('list','api\VehiclesController@index'); 
+    Route::get('options/{type}','api\VehiclesController@options');
 });
 
 Route::group([
@@ -92,6 +96,7 @@ Route::group([
     Route::post('store','api\TransactionController@store');
     Route::get('list','api\TransactionController@list');
     Route::put('update/{id}','api\TransactionController@update');
+    Route::post('search','api\TransactionController@findSearch');
     
 });
 Route::group([

@@ -169,6 +169,20 @@ class ParkingLotController extends Controller
             //throw $th;
          }
     }
+    public function optionsSearch($type){
+        $options=ParkingLot::select('id','lote')->where('type_vehicle',$type)->get();
+        $optionsData=[];
+        foreach($options as $option){
+         $optionsData[]=['text'=>$option->lote,'value'=>$option->id];  
+        }
+        return response()->json(
+            [
+               'status'=>'ok',
+               'message'=>'', 
+               'data'=>$optionsData   
+            ]
+        );
+    }
     public function changeFree($id){
         $ParkingLot=ParkingLot::find($id);
          try {
