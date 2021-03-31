@@ -97,6 +97,7 @@ Route::group([
     Route::get('list','api\TransactionController@list');
     Route::put('update/{id}','api\TransactionController@update');
     Route::post('search','api\TransactionController@findSearch');
+    Route::post('report','api\TransactionController@exportReport');
     
 });
 Route::group([

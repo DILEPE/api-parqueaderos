@@ -10,12 +10,35 @@ class BillController extends Controller
 {
     public function store(Request $request)
     {
-         $separar[1]=explode(':',$request->time_start);
-         $separar[2]=explode(':',$request->time_stop);
+        $primera_fecha_formateada=\Carbon\Carbon::createFromFormat('Y-m-d',$request->date_start);
+        $segunda_fecha_formateada=\Carbon\Carbon::createFromFormat('Y-m-d',$request->date_stop);
+        $hora_limite_dia = '23:59';
+        $intervalo = $primera_fecha_formateada->diffInDays($segunda_fecha_formateada);
+         if($intervalo>=1){
+            
+             $separar[1]=explode(':',$request->time_start);
+             $separar[2]=explode(':',$hora_limite_dia);
+             $separar[3]=explode(':',$request->time_stop);
+             $total_minutos_trasncurridos_primer_dia[1] = ($separar[1][0]*60)+$separar[1][1];
+             $total_minutos_trasncurridos_primer_dia[2] = ($separar[2][0]*60)+$separar[2][1];
+             $total_minutos_trasncurridos_primer_dia = $total_minutos_trasncurridos_primer_dia[2]-$total_minutos_trasncurridos_primer_dia[1];
+             $total_minutos_trasncurridos_ultimo_dia = ($separar[3][0]*60)+$separar[3][1];
+             $total_minutos=$total_minutos_trasncurridos_primer_dia+$total_minutos_trasncurridos_ultimo_dia;
+             if($intervalo>1){
+                $total_minutos_por_dias=$intervalo*1440;  
+                $total_minutos_trasncurridos=($total_minutos_por_dias-$total_minutos_trasncurridos_primer_dia)+$total_minutos_trasncurridos_ultimo_dia;  
+             }else{
+                 $total_minutos_trasncurridos=$total_minutos;
+             }
+             
+        }else{
+             $separar[1]=explode(':',$request->time_start);
+             $separar[2]=explode(':',$request->time_stop);
    
-         $total_minutos_trasncurridos[1] = ($separar[1][0]*60)+$separar[1][1];
-         $total_minutos_trasncurridos[2] = ($separar[2][0]*60)+$separar[2][1];
-         $total_minutos_trasncurridos = $total_minutos_trasncurridos[2]-$total_minutos_trasncurridos[1];
+             $total_minutos_trasncurridos[1] = ($separar[1][0]*60)+$separar[1][1];
+             $total_minutos_trasncurridos[2] = ($separar[2][0]*60)+$separar[2][1];
+             $total_minutos_trasncurridos = $total_minutos_trasncurridos[2]-$total_minutos_trasncurridos[1];
+          }
          if($total_minutos_trasncurridos>60){
            $horas=round($total_minutos_trasncurridos/60); 
            $minutos=$total_minutos_trasncurridos%60;
@@ -31,6 +54,7 @@ class BillController extends Controller
             'client_id'=>$request->client_id,
             'vehicle_id'=>$request->vehicle_id,
             'value'=>$valorTarifa,
+            'status'=>$request->status,
             'description'=>'Tiempo Total Transcurido:'.$total_minutos_trasncurridos.'\n Valor Horas:'.$horas.'\n minutos'.$minutos,
             'parking_lot_id'=>$request->parking_lot_id,
 
@@ -55,11 +79,13 @@ class BillController extends Controller
 }
 public function list()
 {
-    $bill=bill::orderBy('created_at','ASC')->paginate(10);
+    $bills=Bill::with('client','vehicle','parkingLot')->orderBy('created_at','ASC')->get();
+    $suma=Bill::where('status','Pagada')->orderBy('created_at','ASC')->get()->sum('value');
     return response()->json(
         [ 'status'=>'ok',
           'message'=>'', 
-          'data'=>$bill
+          'data'=>$bills,
+          'suma'=>$suma
         ]
     );
 

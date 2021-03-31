@@ -1,11 +1,12 @@
 <?php
 
 namespace App\Http\Controllers\api;
-
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\ValidationTransaction;
 use App\Transaction;
+use App\Exports\TransactionsReport;
 
 class TransactionController extends Controller
 {
@@ -67,7 +68,7 @@ class TransactionController extends Controller
         }
     }
      public function exportReport( Request $request){
-            $condiction=[];
+        return Excel::download(new TransactionsReport($request),'reports.xlsx');
     }
     public function findSearch(Request $request ){
          $parametros=[];
@@ -82,12 +83,22 @@ class TransactionController extends Controller
              $parametros[]=['client_id','=',$request->client_id];
         }
         if($request->date_start!=null || $request->date_start !=''){
-            $parametros[]=['date_start','>=',$request->date_start];
+            $parametros[]=['date_start','=',$request->date_start];
            }
         if($request->date_stop !=null || $request->date_stop !=''){
-            $parametros[]=['date_stop','=<',$request->date_stop];
+            $parametros[]=['date_stop','=',$request->date_stop];
         }
-        $search=Transaction::with('parkingLot','client','tariff','vehicle','bill')->where($parametros)->get();
+        if($request->type!='' || $request->type!=null){
+           $type=$request->type;
+           $search=Transaction::with(['vehicle'=>function($query)use($type){
+              $query->where('type_vehicle',$type); 
+           }])
+           ->with('parkingLot','client','tariff','bill')
+           ->where($parametros)->get(); 
+           //var_dump($search); 
+        }else{
+            $search=Transaction::with('parkingLot','client','tariff','vehicle','bill')->where($parametros)->get();  
+        }
         if(count($search)==0){
             return response()->json([
                 'status'=>'ok',
